@@ -9,13 +9,14 @@ import { formatCurrency } from "@/lib/format";
 import { getProductBySlug } from "@/lib/products";
 
 type ProductPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug);
+  const resolvedParams = await params;
+  const product = await getProductBySlug(resolvedParams.slug);
   if (!product) {
     return { title: "Produto não encontrado" };
   }
@@ -34,7 +35,8 @@ export async function generateMetadata({
 export const dynamic = "force-dynamic";
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProductBySlug(params.slug);
+  const resolvedParams = await params;
+  const product = await getProductBySlug(resolvedParams.slug);
 
   if (!product) {
     notFound();

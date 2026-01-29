@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import { getProducts } from "@/lib/products";
 import { PRODUCT_CATEGORIES } from "@/lib/categories";
+import type { ProductCardData } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Pedidos",
@@ -46,13 +47,17 @@ export default async function PedidosPage({
   const featured = isTruthy(resolvedParams.featured);
   const favorite = isTruthy(resolvedParams.favorite);
 
-  const { items, totalPages, total } = await getProducts({
+  const { items, totalPages, total } = (await getProducts({
     page,
     query,
     category,
     featured,
     favorite,
-  });
+  })) as {
+    items: ProductCardData[];
+    total: number;
+    totalPages: number;
+  };
 
   return (
     <div className="space-y-12 pb-20 pt-10">
@@ -130,7 +135,7 @@ export default async function PedidosPage({
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {items.map((product) => (
+            {items.map((product: ProductCardData) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
