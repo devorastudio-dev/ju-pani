@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { isAdminRequest } from "@/lib/admin";
 
 export const runtime = "nodejs";
@@ -27,6 +26,7 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { prisma } = await import("@/lib/db");
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
     where: { id: resolvedParams.id },
@@ -42,6 +42,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { prisma } = await import("@/lib/db");
     const resolvedParams = await params;
     if (!isAdminRequest(request)) {
       return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
