@@ -17,7 +17,7 @@ Site completo com catálogo, carrinho e checkout via WhatsApp, usando Next.js Ap
    ```bash
    cp .env.example .env
    ```
-   Edite o `.env` com sua URL do Postgres e número do WhatsApp.
+   Edite o `.env` com sua URL do Postgres e numero do WhatsApp.
 3. Rode as migrations e seed
    ```bash
    npm run prisma:migrate
@@ -57,6 +57,10 @@ A formatação está em `src/lib/whatsapp.ts`.
 Rota: `/admin/produtos`
 - Protegida por `ADMIN_PASSWORD` no `.env`
 - CRUD básico com criação, edição e ativação/desativação
+
+## Supabase (recomendado)
+- Use `DATABASE_URL` com `sslmode=require`.
+- Para migrations, use `DIRECT_URL` apontando para a porta 5432.
 
 ---
 Feito para produção, com arquitetura em camadas (`db`, `services`, `ui`) e componentes reutilizáveis.
