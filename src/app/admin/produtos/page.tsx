@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/db";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/sections/section-header";
 import { AdminLogin } from "@/components/admin/admin-login";
@@ -30,6 +29,7 @@ export default async function AdminProdutosPage() {
     );
   }
 
+  const { prisma } = await import("@/lib/db");
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
   });

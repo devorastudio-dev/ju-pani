@@ -1,5 +1,6 @@
 import "server-only";
-import { prisma } from "@/lib/db";
+
+const getPrisma = async () => (await import("@/lib/db")).prisma;
 
 export const PRODUCT_PAGE_SIZE = 9;
 
@@ -13,24 +14,30 @@ export type ProductFilters = {
   includeInactive?: boolean;
 };
 
-export const getFeaturedProducts = async () =>
-  prisma.product.findMany({
+export const getFeaturedProducts = async () => {
+  const prisma = await getPrisma();
+  return prisma.product.findMany({
     where: { active: true, isFeatured: true },
     orderBy: [{ popularityScore: "desc" }, { createdAt: "desc" }],
     take: 8,
   });
+};
 
-export const getFavoriteProducts = async () =>
-  prisma.product.findMany({
+export const getFavoriteProducts = async () => {
+  const prisma = await getPrisma();
+  return prisma.product.findMany({
     where: { active: true, isFavorite: true },
     orderBy: [{ popularityScore: "desc" }, { createdAt: "desc" }],
     take: 8,
   });
+};
 
-export const getProductBySlug = async (slug: string) =>
-  prisma.product.findFirst({
+export const getProductBySlug = async (slug: string) => {
+  const prisma = await getPrisma();
+  return prisma.product.findFirst({
     where: { slug, active: true },
   });
+};
 
 export const getProducts = async ({
   query,
@@ -41,6 +48,7 @@ export const getProducts = async ({
   pageSize = PRODUCT_PAGE_SIZE,
   includeInactive = false,
 }: ProductFilters) => {
+  const prisma = await getPrisma();
   const whereClause: Record<string, unknown> = {
     ...(includeInactive ? {} : { active: true }),
   };

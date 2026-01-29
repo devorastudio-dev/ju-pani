@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { ADMIN_COOKIE, ADMIN_COOKIE_MAX_AGE } from "@/lib/admin";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 const schema = z.object({
   password: z.string().min(1),
 });

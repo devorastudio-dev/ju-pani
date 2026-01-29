@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getProducts } from "@/lib/products";
 import { isAdminRequest } from "@/lib/admin";
 
 export const runtime = "nodejs";
@@ -36,6 +35,7 @@ const createSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
+  const { getProducts } = await import("@/lib/products");
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const query = querySchema.parse(params);
 
