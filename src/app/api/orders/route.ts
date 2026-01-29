@@ -6,6 +6,9 @@ import { CART_COOKIE, getEmptyCart, parseCart, serializeCart } from "@/lib/cart"
 import { calculateShipping, type ShippingMethod } from "@/lib/shipping";
 import { buildWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const orderSchema = z.object({
   customerName: z.string().min(2),
   customerPhone: z.string().min(6),
