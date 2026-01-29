@@ -61,6 +61,7 @@ export async function POST(request: Request) {
     const cart = parseCart(cookieStore.get(CART_COOKIE)?.value);
     const updatedCart = addItemToCart(cart, {
       ...payload,
+      image: payload.image ?? null,
       itemNotes: payload.itemNotes ?? null,
     });
     await setCookie(serializeCart(updatedCart));

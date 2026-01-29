@@ -21,11 +21,12 @@ const updateSchema = z.object({
 });
 
 export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id: resolvedParams.id },
   });
   if (!product) {
     return NextResponse.json({ message: "Produto não encontrado." }, { status: 404 });
@@ -35,16 +36,17 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     if (!isAdminRequest(request)) {
       return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
     }
 
     const payload = updateSchema.parse(await request.json());
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data: payload,
     });
     return NextResponse.json({ product });

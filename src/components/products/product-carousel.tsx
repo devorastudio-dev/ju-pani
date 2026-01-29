@@ -1,8 +1,8 @@
-import type { ProductCard as ProductCardType } from "@/lib/types";
+import type { ProductCardData } from "@/lib/types";
 import { ProductCard } from "@/components/products/product-card";
 
 type ProductCarouselProps = {
-  products: ProductCardType[];
+  products: ProductCardData[];
 };
 
 export const ProductCarousel = ({ products }: ProductCarouselProps) => {

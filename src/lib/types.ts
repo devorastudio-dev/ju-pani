@@ -1,4 +1,4 @@
-export type ProductCard = {
+export type ProductCardData = {
   id: string;
   name: string;
   slug: string;

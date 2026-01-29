@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/format";
-import type { ProductCard } from "@/lib/types";
+import type { ProductCardData } from "@/lib/types";
 import { getCategoryLabel } from "@/lib/categories";
 import { Badge } from "@/components/ui/badge";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 
 type ProductCardProps = {
-  product: ProductCard;
+  product: ProductCardData;
 };
 
 export const ProductCard = ({ product }: ProductCardProps) => {

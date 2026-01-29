@@ -5,15 +5,20 @@ import type { Cart, CartItem } from "@/lib/types";
 export const CART_COOKIE = "ju_cart";
 export const CART_MAX_AGE_DAYS = 7;
 
-const cartItemSchema = z.object({
-  productId: z.string(),
-  name: z.string(),
-  slug: z.string(),
-  image: z.string().nullable().optional(),
-  unitPrice: z.number().int().nonnegative(),
-  quantity: z.number().int().positive(),
-  itemNotes: z.string().nullable().optional(),
-});
+const cartItemSchema = z
+  .object({
+    productId: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    image: z.string().nullable().optional().default(null),
+    unitPrice: z.number().int().nonnegative(),
+    quantity: z.number().int().positive(),
+    itemNotes: z.string().nullable().optional(),
+  })
+  .transform((item) => ({
+    ...item,
+    image: item.image ?? null,
+  }));
 
 const cartSchema = z.object({
   items: z.array(cartItemSchema),
