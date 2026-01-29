@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import { getProducts } from "@/lib/products";
 import { isAdminRequest } from "@/lib/admin";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const querySchema = z.object({
   q: z.string().optional(),
   category: z.string().optional(),

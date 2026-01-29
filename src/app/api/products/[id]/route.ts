@@ -3,6 +3,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { isAdminRequest } from "@/lib/admin";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const updateSchema = z.object({
   name: z.string().min(2).optional(),
   slug: z.string().min(2).optional(),
