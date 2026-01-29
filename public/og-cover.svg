@@ -1,0 +1,14 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="og-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF2E9" />
+      <stop offset="100%" stop-color="#F3B59D" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#og-bg)" />
+  <circle cx="180" cy="180" r="140" fill="#FFF8F3" opacity="0.85" />
+  <circle cx="980" cy="520" r="200" fill="#D59A73" opacity="0.25" />
+  <rect x="140" y="220" width="920" height="260" rx="40" fill="#FFF8F3" />
+  <text x="200" y="340" font-size="64" fill="#3A231C" font-family="Georgia, serif">Ju.pani</text>
+  <text x="200" y="400" font-size="28" fill="#7B3B30" font-family="Arial, sans-serif">Confeitaria artesanal - pedidos via WhatsApp</text>
+</svg>

@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ju.pani · Confeitaria artesanal
 
-## Getting Started
+Site completo com catálogo, carrinho e checkout via WhatsApp, usando Next.js App Router + Prisma + PostgreSQL.
 
-First, run the development server:
+## Stack
+- Next.js (App Router) + TypeScript
+- PostgreSQL + Prisma
+- Tailwind CSS (v4)
+- Zod para validação
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Como rodar localmente
+1. Instale dependências
+   ```bash
+   npm install
+   ```
+2. Configure o ambiente
+   ```bash
+   cp .env.example .env
+   ```
+   Edite o `.env` com sua URL do Postgres e número do WhatsApp.
+3. Rode as migrations e seed
+   ```bash
+   npm run prisma:migrate
+   npm run prisma:seed
+   ```
+4. Suba o app
+   ```bash
+   npm run dev
+   ```
+
+## Scripts úteis
+- `npm run dev` — ambiente local
+- `npm run build` — build de produção
+- `npm run start` — server de produção
+- `npm run prisma:studio` — Prisma Studio
+
+## Carrinho (abordagem escolhida)
+O carrinho é armazenado server-side via cookie HTTP-only (`ju_cart`). Essa abordagem:
+- preserva dados entre páginas sem depender de localStorage
+- evita exposição do carrinho ao JavaScript do cliente
+- facilita sincronizar dados no servidor (ex: criação do pedido)
+
+O estado do carrinho é acessado e atualizado via `/api/cart`.
+
+## Frete
+O cálculo inicial é configurável em `src/lib/shipping.ts` usando uma tabela simples por cidade/bairro.
+No checkout, a lógica já está isolada para ser substituída futuramente por uma API real (Correios/Mapas).
+
+## Pedido via WhatsApp
+O botão “Fazer pedido” cria um `Order` com status `PENDING`, gera a mensagem formatada e redireciona para:
 ```
+https://wa.me/SEU_NUMERO?text=...
+```
+A formatação está em `src/lib/whatsapp.ts`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Admin básico
+Rota: `/admin/produtos`
+- Protegida por `ADMIN_PASSWORD` no `.env`
+- CRUD básico com criação, edição e ativação/desativação
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Feito para produção, com arquitetura em camadas (`db`, `services`, `ui`) e componentes reutilizáveis.

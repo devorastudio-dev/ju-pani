@@ -1,0 +1,58 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { isAdminRequest } from "@/lib/admin";
+
+const updateSchema = z.object({
+  name: z.string().min(2).optional(),
+  slug: z.string().min(2).optional(),
+  description: z.string().min(10).optional(),
+  price: z.number().int().positive().optional(),
+  category: z.string().min(2).optional(),
+  images: z.array(z.string()).optional(),
+  ingredients: z.string().optional(),
+  calories: z.number().int().nullable().optional(),
+  prepTimeMinutes: z.number().int().nullable().optional(),
+  yieldInfo: z.string().optional(),
+  isFeatured: z.boolean().optional(),
+  isFavorite: z.boolean().optional(),
+  popularityScore: z.number().int().optional(),
+  active: z.boolean().optional(),
+});
+
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
+  const product = await prisma.product.findUnique({
+    where: { id: params.id },
+  });
+  if (!product) {
+    return NextResponse.json({ message: "Produto não encontrado." }, { status: 404 });
+  }
+  return NextResponse.json({ product });
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    if (!isAdminRequest(request)) {
+      return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
+    }
+
+    const payload = updateSchema.parse(await request.json());
+    const product = await prisma.product.update({
+      where: { id: params.id },
+      data: payload,
+    });
+    return NextResponse.json({ product });
+  } catch (error) {
+    console.error("Update product error:", error);
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Erro ao atualizar." },
+      { status: 400 }
+    );
+  }
+}
