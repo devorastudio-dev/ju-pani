@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { getProducts } from "@/lib/products";
 import { isAdminRequest } from "@/lib/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 const querySchema = z.object({
   q: z.string().optional(),
@@ -57,6 +58,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const { prisma } = await import("@/lib/db");
     if (!isAdminRequest(request)) {
       return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
     }
