@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { CART_COOKIE, getEmptyCart, parseCart, serializeCart } from "@/lib/cart";
 import { calculateShipping, type ShippingMethod } from "@/lib/shipping";
 import { buildWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -44,6 +43,7 @@ const formatAddress = ({
 
 export async function POST(request: Request) {
   try {
+    const { prisma } = await import("@/lib/db");
     const payload = orderSchema.parse(await request.json());
     const cookieStore = await cookies();
     const cart = parseCart(cookieStore.get(CART_COOKIE)?.value);
