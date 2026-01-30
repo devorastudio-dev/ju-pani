@@ -108,7 +108,11 @@ export async function GET(request: NextRequest) {
     } as Record<"PENDING" | "CONFIRMED" | "CANCELLED", number>;
 
     statusCounts.forEach((item) => {
-      byStatus[item.status] = item._count._all;
+      const count =
+        typeof item._count === "object" && item._count !== null
+          ? item._count._all ?? 0
+          : 0;
+      byStatus[item.status] = count;
     });
 
     return NextResponse.json({
