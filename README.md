@@ -47,16 +47,22 @@ O cálculo inicial é configurável em `src/lib/shipping.ts` usando uma tabela s
 No checkout, a lógica já está isolada para ser substituída futuramente por uma API real (Correios/Mapas).
 
 ## Pedido via WhatsApp
-O botão “Fazer pedido” cria um `Order` com status `PENDING`, gera a mensagem formatada e redireciona para:
+O botão “Fazer pedido” cria um `Order` com status `PENDING` (com itens e totais salvos antes do redirect),
+gera a mensagem formatada e redireciona para:
 ```
 https://wa.me/SEU_NUMERO?text=...
 ```
 A formatação está em `src/lib/whatsapp.ts`.
 
-## Admin básico
-Rota: `/admin/produtos`
-- Protegida por `ADMIN_PASSWORD` no `.env`
-- CRUD básico com criação, edição e ativação/desativação
+## Admin
+Rotas: `/admin/dashboard` e `/admin/produtos`
+- Protegidas por `ADMIN_PASSWORD` no `.env` (login via cookie de sessão).
+- Dashboard de vendas com filtros rápidos (Hoje, 7 dias, 30 dias, Mês atual) e período personalizado.
+- Listagem de produtos com busca por nome (debounce), filtro por categoria e paginação.
+
+### Query params usados nos filtros
+- `/api/products`: `q`, `category`, `page`, `pageSize`, `includeInactive=1` (admin).
+- `/api/admin/orders`: `start=YYYY-MM-DD` e `end=YYYY-MM-DD` para definir o período.
 
 ## Supabase (recomendado)
 - Use `DATABASE_URL` com `sslmode=require`.
@@ -64,3 +70,6 @@ Rota: `/admin/produtos`
 
 ---
 Feito para produção, com arquitetura em camadas (`db`, `services`, `ui`) e componentes reutilizáveis.
+
+
+

@@ -32,9 +32,16 @@ export async function GET(
     where: { id: resolvedParams.id },
   });
   if (!product) {
-    return NextResponse.json({ message: "Produto não encontrado." }, { status: 404 });
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Produto não encontrado.",
+        message: "Produto não encontrado.",
+      },
+      { status: 404 }
+    );
   }
-  return NextResponse.json({ product });
+  return NextResponse.json({ ok: true, product });
 }
 
 export async function PATCH(
@@ -45,7 +52,10 @@ export async function PATCH(
     const { prisma } = await import("@/lib/db");
     const resolvedParams = await params;
     if (!isAdminRequest(request)) {
-      return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
+      return NextResponse.json(
+        { ok: false, error: "Não autorizado.", message: "Não autorizado." },
+        { status: 401 }
+      );
     }
 
     const payload = updateSchema.parse(await request.json());
@@ -53,11 +63,15 @@ export async function PATCH(
       where: { id: resolvedParams.id },
       data: payload,
     });
-    return NextResponse.json({ product });
+    return NextResponse.json({ ok: true, product });
   } catch (error) {
     console.error("Update product error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Erro ao atualizar." },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Erro ao atualizar.",
+        message: error instanceof Error ? error.message : "Erro ao atualizar.",
+      },
       { status: 400 }
     );
   }

@@ -46,7 +46,7 @@ export default async function Home() {
               texturas delicadas e combinações que aquecem o coração.
             </p>
             <div className="flex flex-wrap gap-3">
-              <LinkButton href="/pedidos">Fazer pedido</LinkButton>
+              <LinkButton href="/pedidos" variant="primary">Fazer pedido</LinkButton>
               <LinkButton href="/sobre" variant="secondary">
                 Conhecer história
               </LinkButton>

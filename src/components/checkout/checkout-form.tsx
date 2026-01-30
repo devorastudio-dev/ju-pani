@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
@@ -19,6 +19,9 @@ const paymentOptions = [
   "Cartão de débito",
   "Dinheiro",
 ];
+
+const STORAGE_FORM_KEY = "ju_checkout_form";
+const STORAGE_SHIPPING_KEY = "ju_checkout_shipping";
 
 export const CheckoutForm = () => {
   const { cart, loading } = useCart();
@@ -40,6 +43,47 @@ export const CheckoutForm = () => {
 
   const [shippingMethod, setShippingMethod] =
     useState<ShippingMethod>("DELIVERY");
+  const hasLoadedRef = useRef(false);
+
+  useEffect(() => {
+    try {
+      const storedForm = sessionStorage.getItem(STORAGE_FORM_KEY);
+      if (storedForm) {
+        const parsed = JSON.parse(storedForm) as Partial<typeof form>;
+        setForm((prev) => ({ ...prev, ...parsed }));
+      }
+      const storedShipping = sessionStorage.getItem(STORAGE_SHIPPING_KEY);
+      if (storedShipping === "DELIVERY" || storedShipping === "PICKUP") {
+        setShippingMethod(storedShipping);
+      }
+    } catch {
+      // ignore storage errors
+    } finally {
+      hasLoadedRef.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoadedRef.current) {
+      return;
+    }
+    try {
+      sessionStorage.setItem(STORAGE_FORM_KEY, JSON.stringify(form));
+    } catch {
+      // ignore storage errors
+    }
+  }, [form]);
+
+  useEffect(() => {
+    if (!hasLoadedRef.current) {
+      return;
+    }
+    try {
+      sessionStorage.setItem(STORAGE_SHIPPING_KEY, shippingMethod);
+    } catch {
+      // ignore storage errors
+    }
+  }, [shippingMethod]);
 
   const subtotal =
     cart?.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0) ??
@@ -98,6 +142,12 @@ export const CheckoutForm = () => {
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data?.message ?? "Erro ao criar pedido.");
+      }
+      try {
+        sessionStorage.removeItem(STORAGE_FORM_KEY);
+        sessionStorage.removeItem(STORAGE_SHIPPING_KEY);
+      } catch {
+        // ignore storage errors
       }
       window.location.href = data.whatsappUrl;
     } catch (err) {

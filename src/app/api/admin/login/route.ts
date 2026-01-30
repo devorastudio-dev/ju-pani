@@ -16,12 +16,19 @@ export async function POST(request: Request) {
     const { password } = schema.parse(await request.json());
     if (!process.env.ADMIN_PASSWORD) {
       return NextResponse.json(
-        { message: "ADMIN_PASSWORD não configurada." },
+        {
+          ok: false,
+          error: "ADMIN_PASSWORD não configurada.",
+          message: "ADMIN_PASSWORD não configurada.",
+        },
         { status: 500 }
       );
     }
     if (password !== process.env.ADMIN_PASSWORD) {
-      return NextResponse.json({ message: "Senha inválida." }, { status: 401 });
+      return NextResponse.json(
+        { ok: false, error: "Senha inválida.", message: "Senha inválida." },
+        { status: 401 }
+      );
     }
 
     const response = NextResponse.json({ ok: true });
@@ -34,7 +41,11 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Erro ao autenticar." },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Erro ao autenticar.",
+        message: error instanceof Error ? error.message : "Erro ao autenticar.",
+      },
       { status: 400 }
     );
   }

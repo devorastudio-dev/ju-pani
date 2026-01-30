@@ -53,14 +53,17 @@ export async function GET(request: NextRequest) {
     includeInactive: allowInactive,
   });
 
-  return NextResponse.json({ items, total, totalPages });
+  return NextResponse.json({ ok: true, items, total, totalPages });
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { prisma } = await import("@/lib/db");
     if (!isAdminRequest(request)) {
-      return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
+      return NextResponse.json(
+        { ok: false, error: "Não autorizado.", message: "Não autorizado." },
+        { status: 401 }
+      );
     }
 
     const payload = createSchema.parse(await request.json());
@@ -83,11 +86,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ product });
+    return NextResponse.json({ ok: true, product });
   } catch (error) {
     console.error("Create product error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Erro ao criar." },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Erro ao criar.",
+        message: error instanceof Error ? error.message : "Erro ao criar.",
+      },
       { status: 400 }
     );
   }

@@ -56,7 +56,7 @@ const setCookie = async (cartValue: string) => {
 export async function GET() {
   const cookieStore = await cookies();
   const cart = parseCart(cookieStore.get(CART_COOKIE)?.value);
-  return NextResponse.json({ cart });
+  return NextResponse.json({ ok: true, cart });
 }
 
 export async function POST(request: Request) {
@@ -70,11 +70,15 @@ export async function POST(request: Request) {
       itemNotes: payload.itemNotes ?? null,
     });
     await setCookie(serializeCart(updatedCart));
-    return NextResponse.json({ cart: updatedCart });
+    return NextResponse.json({ ok: true, cart: updatedCart });
   } catch (error) {
     console.error("Cart add error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Erro ao adicionar." },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Erro ao adicionar.",
+        message: error instanceof Error ? error.message : "Erro ao adicionar.",
+      },
       { status: 400 }
     );
   }
@@ -90,7 +94,7 @@ export async function PATCH(request: Request) {
       const payload = notesSchema.parse(body);
       const updatedCart = setCartNotes(cart, payload.notes);
       await setCookie(serializeCart(updatedCart));
-      return NextResponse.json({ cart: updatedCart });
+      return NextResponse.json({ ok: true, cart: updatedCart });
     }
 
     const payload = updateSchema.parse(body);
@@ -101,11 +105,15 @@ export async function PATCH(request: Request) {
       itemNotes: payload.itemNotes,
     });
     await setCookie(serializeCart(updatedCart));
-    return NextResponse.json({ cart: updatedCart });
+    return NextResponse.json({ ok: true, cart: updatedCart });
   } catch (error) {
     console.error("Cart update error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Erro ao atualizar." },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Erro ao atualizar.",
+        message: error instanceof Error ? error.message : "Erro ao atualizar.",
+      },
       { status: 400 }
     );
   }
@@ -118,7 +126,7 @@ export async function DELETE(request: Request) {
     if (payload.clear) {
       const emptyCart = getEmptyCart();
       await setCookie(serializeCart(emptyCart));
-      return NextResponse.json({ cart: emptyCart });
+      return NextResponse.json({ ok: true, cart: emptyCart });
     }
 
     if (!payload.productId) {
@@ -128,11 +136,15 @@ export async function DELETE(request: Request) {
     const cart = parseCart(cookieStore.get(CART_COOKIE)?.value);
     const updatedCart = removeItemFromCart(cart, payload.productId);
     await setCookie(serializeCart(updatedCart));
-    return NextResponse.json({ cart: updatedCart });
+    return NextResponse.json({ ok: true, cart: updatedCart });
   } catch (error) {
     console.error("Cart delete error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Erro ao remover." },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Erro ao remover.",
+        message: error instanceof Error ? error.message : "Erro ao remover.",
+      },
       { status: 400 }
     );
   }

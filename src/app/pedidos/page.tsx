@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { ProductCard } from "@/components/products/product-card";
 import { SectionHeader } from "@/components/sections/section-header";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import { getProducts } from "@/lib/products";
@@ -107,12 +108,7 @@ export default async function PedidosPage({
             </label>
           </div>
           <div className="flex flex-col gap-2 md:flex-row md:items-center">
-            <button
-              type="submit"
-              className="rounded-full bg-[#3a231c] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#5a362c]"
-            >
-              Filtrar
-            </button>
+            <Button type="submit">Filtrar</Button>
             <Link
               href="/pedidos"
               className="rounded-full border border-[#f1d0c7] px-4 py-2 text-sm font-semibold text-[#7b3b30] transition hover:-translate-y-0.5 hover:bg-[#fdf3ee]"

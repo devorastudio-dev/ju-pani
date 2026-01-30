@@ -5,6 +5,16 @@ import type { Cart, CartItem } from "@/lib/types";
 export const CART_COOKIE = "ju_cart";
 export const CART_MAX_AGE_DAYS = 7;
 
+const normalizeCartImage = (image?: string | null) => {
+  if (!image) {
+    return null;
+  }
+  if (image.startsWith("data:")) {
+    return null;
+  }
+  return image;
+};
+
 const cartItemSchema = z
   .object({
     productId: z.string(),
@@ -17,7 +27,7 @@ const cartItemSchema = z
   })
   .transform((item) => ({
     ...item,
-    image: item.image ?? null,
+    image: normalizeCartImage(item.image ?? null),
   }));
 
 const cartSchema = z.object({
@@ -56,7 +66,14 @@ export const parseCart = (cookieValue?: string | null): Cart => {
 };
 
 export const serializeCart = (cart: Cart) => {
-  const serialized = JSON.stringify(cart);
+  const sanitizedCart: Cart = {
+    ...cart,
+    items: cart.items.map((item) => ({
+      ...item,
+      image: normalizeCartImage(item.image),
+    })),
+  };
+  const serialized = JSON.stringify(sanitizedCart);
   return Buffer.from(serialized, "utf-8").toString("base64url");
 };
 

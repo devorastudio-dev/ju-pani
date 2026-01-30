@@ -6,6 +6,7 @@ import { CartIndicator } from "@/components/cart/cart-indicator";
 import Image from "next/image";
 import logoImg from "../../../public/images/logo.png";
 import { useState } from "react";
+import { ShoppingCart } from "@phosphor-icons/react"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -48,40 +49,53 @@ export const SiteHeader = () => {
             href="/carrinho"
             className="relative rounded-full border border-[#f1d0c7] px-4 py-2 text-sm font-semibold text-[#7b3b30] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#fdf3ee]"
           >
-            Carrinho
+            <ShoppingCart 
+            width={15}
+            height={15}
+            />
             <CartIndicator />
           </Link>
         </nav>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 text-[#3a231c]"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Menu"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
+        {/* Mobile Actions */}
+        <div className="flex items-center gap-2 md:hidden">
+          <Link
+            href="/carrinho"
+            className="relative rounded-full border border-[#f1d0c7] px-3 py-2 text-sm font-semibold text-[#7b3b30] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#fdf3ee]"
+            aria-label="Carrinho"
           >
-            {mobileMenuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-              />
-            )}
-          </svg>
-        </button>
+            <ShoppingCart width={16} height={16} />
+            <CartIndicator />
+          </Link>
+          <button
+            className="rounded-full border border-[#f1d0c7] p-2 text-[#3a231c] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#fdf3ee]"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Menu"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              {mobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
@@ -102,7 +116,10 @@ export const SiteHeader = () => {
                 className="relative rounded-full border border-[#f1d0c7] px-4 py-2 text-sm font-semibold text-[#7b3b30] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#fdf3ee] self-start"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Carrinho
+                <ShoppingCart 
+                width={15}
+                height={15}
+                />
                 <CartIndicator />
               </Link>
             </nav>

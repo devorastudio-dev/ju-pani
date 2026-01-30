@@ -3,7 +3,9 @@ import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/sections/section-header";
 import { AdminLogin } from "@/components/admin/admin-login";
 import { AdminProductsClient } from "@/components/admin/admin-products-client";
+import { AdminNav } from "@/components/admin/admin-nav";
 import { isAdminFromCookies } from "@/lib/admin";
+import { getProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Admin · Produtos",
@@ -12,7 +14,13 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminProdutosPage() {
+const ADMIN_PAGE_SIZE = 10;
+
+export default async function AdminProdutosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const isAdmin = await isAdminFromCookies();
 
   if (!isAdmin) {
@@ -29,9 +37,18 @@ export default async function AdminProdutosPage() {
     );
   }
 
-  const { prisma } = await import("@/lib/db");
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
+  const resolvedParams = await searchParams;
+  const getParam = (value?: string | string[]) =>
+    Array.isArray(value) ? value[0] : value;
+  const page = Math.max(1, Number(getParam(resolvedParams.page) ?? 1) || 1);
+  const query = getParam(resolvedParams.q) ?? "";
+  const category = getParam(resolvedParams.category) ?? "all";
+  const { items, totalPages, total } = await getProducts({
+    page,
+    query,
+    category,
+    includeInactive: true,
+    pageSize: ADMIN_PAGE_SIZE,
   });
 
   return (
@@ -41,7 +58,15 @@ export default async function AdminProdutosPage() {
           title="Admin · Produtos"
           subtitle="Crie, edite ou ative/desative itens do catálogo."
         />
-        <AdminProductsClient initialProducts={products} />
+        <AdminNav current="produtos" />
+        <AdminProductsClient
+          initialProducts={items}
+          initialQuery={query}
+          initialCategory={category}
+          initialPage={page}
+          initialTotalPages={totalPages}
+          initialTotal={total}
+        />
       </Container>
     </div>
   );

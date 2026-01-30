@@ -50,7 +50,11 @@ export async function POST(request: Request) {
 
     if (!cart.items.length) {
       return NextResponse.json(
-        { message: "Carrinho vazio." },
+        {
+          ok: false,
+          error: "Carrinho vazio.",
+          message: "Carrinho vazio.",
+        },
         { status: 400 }
       );
     }
@@ -66,7 +70,11 @@ export async function POST(request: Request) {
 
       if (missingAddress) {
         return NextResponse.json(
-          { message: "Endereço incompleto para entrega." },
+          {
+            ok: false,
+            error: "Endereço incompleto para entrega.",
+            message: "Endereço incompleto para entrega.",
+          },
           { status: 400 }
         );
       }
@@ -163,11 +171,15 @@ export async function POST(request: Request) {
       maxAge: 0,
     });
 
-    return NextResponse.json({ orderId: order.id, whatsappUrl });
+    return NextResponse.json({ ok: true, orderId: order.id, whatsappUrl });
   } catch (error) {
     console.error("Order error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Erro ao criar pedido." },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "Erro ao criar pedido.",
+        message: error instanceof Error ? error.message : "Erro ao criar pedido.",
+      },
       { status: 400 }
     );
   }

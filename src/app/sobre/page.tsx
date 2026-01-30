@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
-import { SectionHeader } from "@/components/sections/section-header";
+import { SectionHeader } from "@/components/sections/section-header"
+import sobreImg from "../../../public/images/sobre.jpeg";
 
 export const metadata: Metadata = {
   title: "Sobre",
@@ -40,11 +41,11 @@ export default function SobrePage() {
           </div>
           <div className="rounded-[40px] bg-white p-4 shadow-soft">
             <Image
-              src="/images/atelier.svg"
+              src={sobreImg}
               alt="Ateliê Ju.pani"
               width={520}
               height={520}
-              className="h-auto w-full rounded-[32px]"
+              className="h-auto w-full rounded-4xl"
             />
           </div>
         </Container>
