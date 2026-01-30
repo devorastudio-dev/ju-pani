@@ -95,6 +95,7 @@ export async function GET(request: NextRequest) {
       }),
       prisma.order.groupBy({
         by: ["status"],
+        orderBy: { status: "asc" },
         where: whereClause,
         _count: { _all: true },
       }),
