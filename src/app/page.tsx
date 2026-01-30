@@ -73,7 +73,7 @@ export default async function Home() {
             <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full border border-dashed border-[#f0bfae]" />
             <div className="rounded-[48px] bg-white p-4 shadow-soft">
               <Image
-                src="/images/hero-cake.svg"
+                src="/images/hero.png"
                 alt="Mesa de doces Ju.pani"
                 width={520}
                 height={520}
