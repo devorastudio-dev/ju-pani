@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
+import {
+  CONTACT_INSTAGRAM_HANDLE,
+  CONTACT_INSTAGRAM_URL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_E164,
+} from "@/lib/contact";
 
 export const SiteFooter = () => {
   return (
@@ -16,7 +22,22 @@ export const SiteFooter = () => {
           <p className="font-semibold text-[#7b3b30]">Atendimento</p>
           <p>Seg-Sáb · 9h às 19h</p>
           <p>Retirada e entregas programadas</p>
-          <p>WhatsApp: (31) 99085-5251</p>
+          <a
+            href={`https://wa.me/${CONTACT_PHONE_E164}`}
+            target="_blank"
+            rel="noreferrer"
+            className="block hover:text-[#d37d64]"
+          >
+            WhatsApp: {CONTACT_PHONE_DISPLAY}
+          </a>
+          <a
+            href={CONTACT_INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="block hover:text-[#d37d64]"
+          >
+            Instagram: @{CONTACT_INSTAGRAM_HANDLE}
+          </a>
         </div>
         <div className="space-y-2 text-sm text-[#3a231c]">
           <p className="font-semibold text-[#7b3b30]">Navegação</p>

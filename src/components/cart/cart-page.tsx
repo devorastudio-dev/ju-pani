@@ -125,7 +125,7 @@ export const CartPage = () => {
             <span className="font-semibold">{formatCurrency(subtotal)}</span>
           </div>
           <div className="flex items-center justify-between text-xs text-[#7b3b30]">
-            <span>Frete calculado no checkout</span>
+            <span>Frete leve para Piracema, calculado no checkout</span>
           </div>
         </div>
         <LinkButton href="/checkout" className="mt-6 w-full">

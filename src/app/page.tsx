@@ -5,6 +5,7 @@ import { SectionHeader } from "@/components/sections/section-header";
 import { ProductCarousel } from "@/components/products/product-carousel";
 import { ProductCard } from "@/components/products/product-card";
 import { LinkButton } from "@/components/ui/link-button";
+import { ATELIER_ADDRESS, CONTACT_INSTAGRAM_URL } from "@/lib/contact";
 import { getFavoriteProducts, getFeaturedProducts, getProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
@@ -45,11 +46,22 @@ export default async function Home() {
               Na Ju.pani, cada receita é criada à mão com ingredientes frescos,
               texturas delicadas e combinações que aquecem o coração.
             </p>
+            <div className="inline-flex w-fit items-center rounded-full border border-[#f1d0c7] bg-white/90 px-4 py-2 text-sm font-semibold text-[#7b3b30] shadow-soft">
+              Entregas em {ATELIER_ADDRESS.city}
+            </div>
             <div className="flex flex-wrap gap-3">
               <LinkButton href="/pedidos" variant="primary">Fazer pedido</LinkButton>
               <LinkButton href="/sobre" variant="secondary">
                 Conhecer história
               </LinkButton>
+              <a
+                href={CONTACT_INSTAGRAM_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-[#f1d0c7] bg-white px-5 py-2 text-sm font-semibold text-[#7b3b30] transition hover:-translate-y-0.5 hover:bg-[#fdf3ee]"
+              >
+                Ver Instagram
+              </a>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
               {[

@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { CART_COOKIE, getEmptyCart, parseCart, serializeCart } from "@/lib/cart";
-import { calculateShipping, type ShippingMethod } from "@/lib/shipping";
+import { ATELIER_ADDRESS } from "@/lib/contact";
+import {
+  calculateShipping,
+  supportsDelivery,
+  type ShippingMethod,
+} from "@/lib/shipping";
 import { buildWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export const runtime = "nodejs";
@@ -78,6 +83,22 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
+
+      if (
+        !supportsDelivery({
+          city: payload.addressCity ?? "",
+          method: payload.shippingMethod,
+        })
+      ) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "No momento, atendemos apenas entregas em Piracema.",
+            message: "No momento, atendemos apenas entregas em Piracema.",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     const subtotal = cart.items.reduce(
@@ -86,7 +107,7 @@ export async function POST(request: Request) {
     );
 
     const shippingFee = calculateShipping({
-      city: payload.addressCity ?? "Minas Gerais",
+      city: payload.addressCity ?? ATELIER_ADDRESS.city,
       district: payload.addressDistrict ?? "Outros",
       method: payload.shippingMethod as ShippingMethod,
     });
@@ -105,12 +126,16 @@ export async function POST(request: Request) {
         : payload.addressDistrict ?? "";
     const addressCity =
       payload.shippingMethod === "PICKUP"
-        ? "Minas Gerais"
+        ? ATELIER_ADDRESS.city
         : payload.addressCity ?? "";
     const addressState =
-      payload.shippingMethod === "PICKUP" ? "MG" : payload.addressState ?? "";
+      payload.shippingMethod === "PICKUP"
+        ? ATELIER_ADDRESS.state
+        : payload.addressState ?? "";
     const addressZip =
-      payload.shippingMethod === "PICKUP" ? "35536-000" : payload.addressZip ?? "";
+      payload.shippingMethod === "PICKUP"
+        ? ATELIER_ADDRESS.zip
+        : payload.addressZip ?? "";
 
     const order = await prisma.order.create({
       data: {

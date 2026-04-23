@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/sections/section-header";
+import {
+  ATELIER_ADDRESS,
+  CONTACT_INSTAGRAM_HANDLE,
+  CONTACT_INSTAGRAM_URL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_E164,
+} from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Endereço",
@@ -29,10 +35,11 @@ export default function EnderecoPage() {
               Ju.pani Ateliê
             </p>
             <h2 className="font-display text-2xl text-[#3a231c]">
-              Rua Bela Vista, 40
+              {ATELIER_ADDRESS.street}
             </h2>
             <p className="text-sm text-[#7b3b30]">
-              Planalto · Piracema · Mg · 35536-000
+              {ATELIER_ADDRESS.district} · {ATELIER_ADDRESS.city} ·{" "}
+              {ATELIER_ADDRESS.state} · {ATELIER_ADDRESS.zip}
             </p>
             <div className="grid gap-4 rounded-2xl bg-[#fff8f3] p-4 text-sm text-[#3a231c]">
               <div>
@@ -53,18 +60,18 @@ export default function EnderecoPage() {
               </div>
             </div>
           </div>
-            <div className="rounded-[36px] bg-white p-4 shadow-soft">
+          <div className="rounded-[36px] bg-white p-4 shadow-soft">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1664.4431248128494!2d-44.47192502193879!3d-20.524728902692182!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spt-BR!2sbr!4v1769709370694!5m2!1spt-BR!2sbr"
               width="100%"
               height="540"
-              style={{ border: 0, borderRadius: '28px' }}
+              style={{ border: 0, borderRadius: "28px" }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               title="Localização Ju.pani Ateliê"
             />
-            </div>
+          </div>
         </div>
       </Container>
 
@@ -76,7 +83,7 @@ export default function EnderecoPage() {
           },
           {
             title: "Contato rápido",
-            text: "WhatsApp (31) 99085-5251 · atendimento humanizado.",
+            text: `WhatsApp ${CONTACT_PHONE_DISPLAY} · Instagram @${CONTACT_INSTAGRAM_HANDLE}.`,
           },
           {
             title: "Agendamento",
@@ -88,6 +95,26 @@ export default function EnderecoPage() {
               {item.title}
             </h3>
             <p className="mt-3 text-sm text-[#7b3b30]">{item.text}</p>
+            {item.title === "Contato rápido" && (
+              <div className="mt-4 flex flex-col gap-2 text-sm">
+                <a
+                  href={`https://wa.me/${CONTACT_PHONE_E164}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[#3a231c] transition hover:text-[#d37d64]"
+                >
+                  Chamar no WhatsApp
+                </a>
+                <a
+                  href={CONTACT_INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[#3a231c] transition hover:text-[#d37d64]"
+                >
+                  Ver Instagram
+                </a>
+              </div>
+            )}
           </div>
         ))}
       </Container>

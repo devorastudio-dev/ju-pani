@@ -1,12 +1,13 @@
 "use client";
 
+import { InstagramLogo, ShoppingCart, WhatsappLogo } from "@phosphor-icons/react";
 import Link from "next/link";
-import { Container } from "@/components/layout/container";
-import { CartIndicator } from "@/components/cart/cart-indicator";
 import Image from "next/image";
-import logoImg from "../../../public/images/logo.png";
 import { useState } from "react";
-import { ShoppingCart } from "@phosphor-icons/react"
+import { CartIndicator } from "@/components/cart/cart-indicator";
+import { Container } from "@/components/layout/container";
+import { CONTACT_INSTAGRAM_URL, CONTACT_PHONE_E164 } from "@/lib/contact";
+import logoImg from "../../../public/images/logo.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -45,6 +46,24 @@ export const SiteHeader = () => {
               {item.label}
             </Link>
           ))}
+          <a
+            href={`https://wa.me/${CONTACT_PHONE_E164}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#3a231c] px-4 py-2 text-sm font-semibold text-white! shadow-sm transition hover:-translate-y-0.5 hover:bg-[#5a362c]"
+          >
+            <WhatsappLogo width={16} height={16} />
+            WhatsApp
+          </a>
+          <a
+            href={CONTACT_INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram da Ju.pani"
+            className="text-[#7b3b30] transition hover:text-[#d37d64]"
+          >
+            <InstagramLogo width={18} height={18} />
+          </a>
           <Link
             href="/carrinho"
             className="relative rounded-full border border-[#f1d0c7] px-4 py-2 text-sm font-semibold text-[#7b3b30] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#fdf3ee]"
@@ -111,6 +130,25 @@ export const SiteHeader = () => {
                   {item.label}
                 </Link>
               ))}
+              <a
+                href={`https://wa.me/${CONTACT_PHONE_E164}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-[#3a231c] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#5a362c] self-start"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <WhatsappLogo width={16} height={16} />
+                WhatsApp
+              </a>
+              <a
+                href={CONTACT_INSTAGRAM_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="py-2 text-[#7b3b30] transition hover:text-[#d37d64]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Instagram
+              </a>
               <Link
                 href="/carrinho"
                 className="relative rounded-full border border-[#f1d0c7] px-4 py-2 text-sm font-semibold text-[#7b3b30] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#fdf3ee] self-start"

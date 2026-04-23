@@ -1,4 +1,5 @@
 import "server-only";
+import { CONTACT_PHONE_E164 } from "@/lib/contact";
 import { formatCurrency } from "@/lib/format";
 import type { CartItem } from "@/lib/types";
 
@@ -49,7 +50,9 @@ export const buildWhatsAppMessage = (order: WhatsAppOrder) => {
 
 export const buildWhatsAppUrl = (message: string) => {
   const phone =
-    process.env.WHATSAPP_NUMBER ?? process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+    process.env.WHATSAPP_NUMBER ??
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ??
+    CONTACT_PHONE_E164;
 
   if (!phone) {
     throw new Error("WHATSAPP_NUMBER não configurado.");

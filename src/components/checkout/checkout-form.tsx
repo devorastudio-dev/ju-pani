@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ATELIER_ADDRESS } from "@/lib/contact";
 import { formatCurrency } from "@/lib/format";
 import {
   calculateShipping,
+  getShippingBreakdown,
   SHIPPING_METHODS,
+  supportsDelivery,
   type ShippingMethod,
 } from "@/lib/shipping";
 
@@ -23,6 +26,30 @@ const paymentOptions = [
 const STORAGE_FORM_KEY = "ju_checkout_form";
 const STORAGE_SHIPPING_KEY = "ju_checkout_shipping";
 
+const formatPhone = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 7) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+};
+
+const formatZip = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+
+  if (digits.length <= 5) {
+    return digits;
+  }
+
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+};
+
 export const CheckoutForm = () => {
   const { cart, loading } = useCart();
   const [submitting, setSubmitting] = useState(false);
@@ -34,7 +61,7 @@ export const CheckoutForm = () => {
     addressStreet: "",
     addressNumber: "",
     addressDistrict: "",
-    addressCity: "Minas Gerais",
+    addressCity: "Piracema",
     addressState: "MG",
     addressZip: "",
     addressReference: "",
@@ -98,6 +125,19 @@ export const CheckoutForm = () => {
   }, [form.addressCity, form.addressDistrict, shippingMethod]);
 
   const total = subtotal + shippingFee;
+  const shippingBreakdown = useMemo(() => {
+    return getShippingBreakdown({
+      city: form.addressCity,
+      district: form.addressDistrict,
+      method: shippingMethod,
+    });
+  }, [form.addressCity, form.addressDistrict, shippingMethod]);
+  const deliveryAvailable = useMemo(() => {
+    return supportsDelivery({
+      city: form.addressCity,
+      method: shippingMethod,
+    });
+  }, [form.addressCity, shippingMethod]);
 
   if (loading) {
     return (
@@ -122,6 +162,10 @@ export const CheckoutForm = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!deliveryAvailable) {
+      setError("No momento, as entregas estao disponiveis apenas para Piracema.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -168,6 +212,9 @@ export const CheckoutForm = () => {
             Preencha suas informações para que possamos confirmar o pedido no
             WhatsApp.
           </p>
+          <p className="mt-2 text-xs text-[#7b3b30]">
+            No momento, as entregas estao disponiveis apenas para {ATELIER_ADDRESS.city}.
+          </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
@@ -191,9 +238,13 @@ export const CheckoutForm = () => {
               required
               value={form.customerPhone}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, customerPhone: event.target.value }))
+                setForm((prev) => ({
+                  ...prev,
+                  customerPhone: formatPhone(event.target.value),
+                }))
               }
               placeholder="(37) 99999-9999"
+              inputMode="tel"
             />
           </div>
         </div>
@@ -201,6 +252,17 @@ export const CheckoutForm = () => {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d59a73]">
             Frete
           </p>
+          <p className="mt-2 text-sm text-[#7b3b30]">
+            {shippingBreakdown.label}: {formatCurrency(shippingBreakdown.fee)}
+          </p>
+          <p className="mt-1 text-xs text-[#7b3b30]">
+            {shippingBreakdown.description}
+          </p>
+          {!deliveryAvailable && shippingMethod === "DELIVERY" && (
+            <p className="mt-2 text-xs font-semibold text-[#a34e3b]">
+              Entrega indisponivel para fora de {ATELIER_ADDRESS.city}. Escolha retirada no atelie.
+            </p>
+          )}
           <div className="mt-3 flex flex-col gap-3">
             {SHIPPING_METHODS.map((method) => (
               <label
@@ -261,7 +323,7 @@ export const CheckoutForm = () => {
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, addressDistrict: event.target.value }))
               }
-              placeholder="Pinheiros"
+              placeholder="Planalto"
             />
           </div>
           <div>
@@ -274,7 +336,9 @@ export const CheckoutForm = () => {
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, addressCity: event.target.value }))
               }
-              placeholder="Piracema"
+              placeholder={ATELIER_ADDRESS.city}
+              readOnly
+              className="bg-[#fff8f3]"
             />
           </div>
           <div>
@@ -287,7 +351,9 @@ export const CheckoutForm = () => {
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, addressState: event.target.value }))
               }
-              placeholder="MG"
+              placeholder={ATELIER_ADDRESS.state}
+              readOnly
+              className="bg-[#fff8f3]"
             />
           </div>
           <div>
@@ -298,9 +364,13 @@ export const CheckoutForm = () => {
               required={shippingMethod === "DELIVERY"}
               value={form.addressZip}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, addressZip: event.target.value }))
+                setForm((prev) => ({
+                  ...prev,
+                  addressZip: formatZip(event.target.value),
+                }))
               }
               placeholder="00000-000"
+              inputMode="numeric"
             />
           </div>
           <div>
@@ -382,6 +452,7 @@ export const CheckoutForm = () => {
               <span>Frete</span>
               <span>{formatCurrency(shippingFee)}</span>
             </div>
+            <p className="text-xs text-[#7b3b30]">{shippingBreakdown.label}</p>
             <div className="flex items-center justify-between text-base font-semibold">
               <span>Total</span>
               <span>{formatCurrency(total)}</span>
@@ -390,7 +461,7 @@ export const CheckoutForm = () => {
         </div>
         <Button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !deliveryAvailable}
           className="w-full text-base"
         >
           {submitting ? "Gerando pedido..." : "Fazer pedido via WhatsApp"}

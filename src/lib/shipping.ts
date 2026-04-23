@@ -1,9 +1,11 @@
+import { ATELIER_ADDRESS } from "@/lib/contact";
+
 export type ShippingMethod = "DELIVERY" | "PICKUP";
 
-export type ShippingRule = {
-  city: string;
-  district: string;
+export type ShippingFeeBreakdown = {
   fee: number;
+  label: string;
+  description: string;
 };
 
 export const SHIPPING_METHODS: {
@@ -14,7 +16,7 @@ export const SHIPPING_METHODS: {
   {
     id: "DELIVERY",
     label: "Entrega",
-    description: "Taxa calculada conforme bairro.",
+    description: "Taxa leve conforme a regiao do endereco em Piracema.",
   },
   {
     id: "PICKUP",
@@ -23,11 +25,19 @@ export const SHIPPING_METHODS: {
   },
 ];
 
-export const SHIPPING_RULES: ShippingRule[] = [
-  { city: "São Paulo", district: "Pinheiros", fee: 900 },
-  { city: "São Paulo", district: "Vila Madalena", fee: 1000 },
-  { city: "São Paulo", district: "Perdizes", fee: 1100 },
-  { city: "São Paulo", district: "Outros", fee: 1500 },
+const BASE_DELIVERY_FEE = 400;
+const EXTENDED_AREA_FEE = 600;
+
+const EXTENDED_AREA_KEYWORDS = [
+  "zona rural",
+  "area rural",
+  "chacara",
+  "chacaras",
+  "sitio",
+  "fazenda",
+  "povoado",
+  "comunidade",
+  "afastado",
 ];
 
 const normalize = (value: string) =>
@@ -37,7 +47,7 @@ const normalize = (value: string) =>
     .trim()
     .toLowerCase();
 
-export const calculateShipping = ({
+export const getShippingBreakdown = ({
   city,
   district,
   method,
@@ -45,25 +55,64 @@ export const calculateShipping = ({
   city: string;
   district: string;
   method: ShippingMethod;
-}) => {
+}): ShippingFeeBreakdown => {
   if (method === "PICKUP") {
-    return 0;
+    return {
+      fee: 0,
+      label: "Retirada no ateliê",
+      description: "Sem taxa de entrega.",
+    };
   }
 
   const normalizedCity = normalize(city);
   const normalizedDistrict = normalize(district);
+  const atelierCity = normalize(ATELIER_ADDRESS.city);
+  const isExtendedArea = EXTENDED_AREA_KEYWORDS.some((keyword) =>
+    normalizedDistrict.includes(normalize(keyword))
+  );
 
-  const rule =
-    SHIPPING_RULES.find(
-      (item) =>
-        normalize(item.city) === normalizedCity &&
-        normalize(item.district) === normalizedDistrict
-    ) ??
-    SHIPPING_RULES.find(
-      (item) =>
-        normalize(item.city) === normalizedCity &&
-        normalize(item.district) === normalize("Outros")
-    );
+  if (!normalizedCity || normalizedCity === atelierCity) {
+    if (isExtendedArea) {
+      return {
+        fee: EXTENDED_AREA_FEE,
+        label: "Entrega em area mais afastada",
+        description: "Taxa um pouco maior para zona rural e enderecos mais afastados.",
+      };
+    }
 
-  return rule ? rule.fee : 1500;
+    return {
+      fee: BASE_DELIVERY_FEE,
+      label: `Entrega em ${ATELIER_ADDRESS.city}`,
+      description: "Taxa base para entregas urbanas em Piracema.",
+    };
+  }
+
+  return {
+    fee: 0,
+    label: "Entrega indisponivel fora de Piracema",
+    description: "No momento, atendemos apenas enderecos em Piracema.",
+  };
+};
+
+export const calculateShipping = (params: {
+  city: string;
+  district: string;
+  method: ShippingMethod;
+}) => getShippingBreakdown(params).fee;
+
+export const supportsDelivery = ({
+  city,
+  method,
+}: {
+  city: string;
+  method: ShippingMethod;
+}) => {
+  if (method === "PICKUP") {
+    return true;
+  }
+
+  const normalizedCity = normalize(city);
+  const atelierCity = normalize(ATELIER_ADDRESS.city);
+
+  return !normalizedCity || normalizedCity === atelierCity;
 };
